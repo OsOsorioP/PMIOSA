@@ -60,6 +60,7 @@ agent_apps = {
     "intermediacion_comercializacion": app_comercializacion,
     "prediccion_riesgos": app_gestion_riesgos
 }
+
 agent_descriptions_map = {
     "Agente de Monitoreo y Diagnóstico de Cultivos": agente_monitoreo_descripcion,
     "Agente de Optimización de la Producción": agente_produccion_descripcion,
