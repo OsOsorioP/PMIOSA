@@ -1,7 +1,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from core.config import settings
-from api.chat import endpoints
+from .core.config import settings
+from .api.chat import endpoints
 
 app_fastapi = FastAPI(
     title="Plataforma Multiagente de Agricultura Sostenible v2",
