@@ -4,7 +4,7 @@ from typing import List
 from agents.graph import app_orchestrator_iterative 
 from langchain_core.messages import BaseMessage 
 
-from models import ChatRequest, ChatResponse, ChatMessageInput 
+from models.models import ChatRequest, ChatResponse, ChatMessageInput 
 from utils import convert_from_langchain_message
 
 router = APIRouter()
