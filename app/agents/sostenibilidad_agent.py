@@ -1,7 +1,8 @@
 from langgraph.prebuilt import ToolNode
 from app.core.llm_setup import llm 
-from agent_state import AgentState
-from tools.sostenibilidad_tools import sostenibilidad_tools
+from .agent_state import AgentState
+from app.tools.sostenibilidad_tools import sostenibilidad_tools
+from langgraph.graph import StateGraph, END
 
 agente_sostenibilidad_descripcion = """
 Eres el Agente de Sostenibilidad y Prácticas Agrícolas.
@@ -27,3 +28,38 @@ def agente_sostenibilidad_node(state: AgentState):
     response = llm_with_sostenibilidad_tools.invoke(messages)
     print(f"Respuesta del LLM (Agente Sostenibilidad): {response}")
     return {"messages": [response]}
+
+# PASO 6.4: CONSTRUCCIÓN DEL GRAFO PARA EL AGENTE DE SOSTENIBILIDAD
+
+workflow_sostenibilidad = StateGraph(AgentState)
+
+workflow_sostenibilidad.add_node("agente_sostenibilidad", agente_sostenibilidad_node)
+workflow_sostenibilidad.add_node("ejecutor_herramientas_sostenibilidad", sostenibilidad_tool_node)
+
+workflow_sostenibilidad.set_entry_point("agente_sostenibilidad")
+
+def deberia_llamar_herramientas_sostenibilidad(state: AgentState) -> str:
+    """
+    Decide si el último mensaje del LLM (agente_sostenibilidad) contiene una llamada a herramienta.
+    """
+    print("--- CONDICIÓN: ¿LLAMAR HERRAMIENTA (SOSTENIBILIDAD)? ---")
+    last_message = state['messages'][-1]
+    if hasattr(last_message, 'tool_calls') and last_message.tool_calls:
+        print(f"Decisión: SÍ, llamar herramienta. Llamadas: {last_message.tool_calls}")
+        return "ejecutor_herramientas_sostenibilidad"
+    print("Decisión: NO, finalizar/responder.")
+    return END
+
+workflow_sostenibilidad.add_conditional_edges(
+    "agente_sostenibilidad",
+    deberia_llamar_herramientas_sostenibilidad,
+    {
+        "ejecutor_herramientas_sostenibilidad": "ejecutor_herramientas_sostenibilidad",
+        END: END
+    }
+)
+
+workflow_sostenibilidad.add_edge("ejecutor_herramientas_sostenibilidad", "agente_sostenibilidad")
+
+app_sostenibilidad = workflow_sostenibilidad.compile()
+print("Grafo para el Agente de Sostenibilidad y Prácticas Agrícolas compilado.")
