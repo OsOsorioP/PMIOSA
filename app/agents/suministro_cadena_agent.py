@@ -1,7 +1,8 @@
 from langgraph.prebuilt import ToolNode
 from app.core.llm_setup import llm 
-from agent_state import AgentState
-from tools.cadena_suministro_tools import cadena_suministro_tools
+from .agent_state import AgentState
+from app.tools.cadena_suministro_tools import cadena_suministro_tools
+from langgraph.graph import StateGraph, END
 
 agente_cadena_descripcion = """
 Eres el Agente de Optimización de la Cadena de Suministro.
@@ -28,3 +29,38 @@ def agente_cadena_suministro_node(state: AgentState):
     response = llm_with_cadena_suministro_tools.invoke(messages)
     print(f"Respuesta del LLM (Agente Cadena Suministro): {response}")
     return {"messages": [response]}
+
+# PASO 7.4: CONSTRUCCIÓN DEL GRAFO PARA EL AGENTE DE CADENA DE SUMINISTRO
+
+workflow_cadena_suministro = StateGraph(AgentState)
+
+workflow_cadena_suministro.add_node("agente_cadena_suministro", agente_cadena_suministro_node)
+workflow_cadena_suministro.add_node("ejecutor_herramientas_cadena", cadena_suministro_tool_node) # Nombre de nodo único
+
+workflow_cadena_suministro.set_entry_point("agente_cadena_suministro")
+
+def deberia_llamar_herramientas_cadena(state: AgentState) -> str: # Nombre de función único
+    """
+    Decide si el último mensaje del LLM (agente_cadena_suministro) contiene una llamada a herramienta.
+    """
+    print("--- CONDICIÓN: ¿LLAMAR HERRAMIENTA (CADENA SUMINISTRO)? ---")
+    last_message = state['messages'][-1]
+    if hasattr(last_message, 'tool_calls') and last_message.tool_calls:
+        print(f"Decisión: SÍ, llamar herramienta. Llamadas: {last_message.tool_calls}")
+        return "ejecutor_herramientas_cadena"
+    print("Decisión: NO, finalizar/responder.")
+    return END
+
+workflow_cadena_suministro.add_conditional_edges(
+    "agente_cadena_suministro",
+    deberia_llamar_herramientas_cadena,
+    {
+        "ejecutor_herramientas_cadena": "ejecutor_herramientas_cadena",
+        END: END
+    }
+)
+
+workflow_cadena_suministro.add_edge("ejecutor_herramientas_cadena", "agente_cadena_suministro")
+
+app_cadena_suministro = workflow_cadena_suministro.compile()
+print("Grafo para el Agente de Optimización de la Cadena de Suministro compilado.")
