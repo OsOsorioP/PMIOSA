@@ -2,25 +2,13 @@ from typing import TypedDict, Annotated, List, Optional
 import operator
 from langchain_core.messages import BaseMessage
 
-from app.agents import (
-    app_monitoreo,  
-    app_produccion,
-    app_hidrico,
-    app_sostenibilidad,
-    app_cadena_suministro,
-    app_comercializacion,
-    app_gestion_riesgos
-)
-
-from agents import (
-    agente_monitoreo_descripcion,   
-    agente_produccion_descripcion,
-    agente_hidrico_descripcion,
-    agente_sostenibilidad_descripcion,
-    agente_cadena_descripcion,
-    agente_comercializacion_descripcion,
-    agente_riesgos_descripcion
-)
+from app.agents.monitoreo_agent import app_monitoreo, agente_monitoreo_descripcion
+from .produccion_agent import app_produccion, agente_produccion_descripcion
+from .hidricos_agent import app_hidrico, agente_hidrico_descripcion
+from .sostenibilidad_agent import app_sostenibilidad, agente_sostenibilidad_descripcion
+from .suministro_cadena_agent import app_cadena_suministro, agente_cadena_descripcion
+from .comercializacion_agent import app_comercializacion, agente_comercializacion_descripcion
+from .gestion_riesgos_agent import app_gestion_riesgos, agente_riesgos_descripcion
 
 
 class OrchestratorState(TypedDict):
