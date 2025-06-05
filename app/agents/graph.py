@@ -1,8 +1,8 @@
-from orquestador_state import OrchestratorState
+from .orquestador_state import OrchestratorState
 from langgraph.graph import StateGraph, END
 from langchain_core.messages import AIMessage
-from invoker import supervisor_node_iterative, agent_nodes_revised
-from orquestador_agent import agent_node_names
+from .invoker import agent_nodes_revised
+from .orquestador_agent import agent_node_names, supervisor_node_iterative
 
 def error_handler_node(state: OrchestratorState):
     print("--- ERROR HANDLER NODE ---")
@@ -84,11 +84,3 @@ print("Grafo del Orquestador Iterativo compilado.")
 # (Opcional) Visualizar el nuevo grafo (usando el código del Paso 10.6.1 o 10.6.2,
 # pero aplicado a 'app_orchestrator_iterative')
 # Ejemplo con Mermaid:
-if 'app_orchestrator_iterative' in globals():
-    try:
-        mermaid_code_iterative = app_orchestrator_iterative.get_graph().draw_mermaid()
-        print("\n--- Código Mermaid del Grafo del Orquestador Iterativo ---")
-        print(mermaid_code_iterative)
-        print("----------------------------------------------------------")
-    except Exception as e:
-        print(f"No se pudo generar el código Mermaid para el grafo iterativo: {e}")
