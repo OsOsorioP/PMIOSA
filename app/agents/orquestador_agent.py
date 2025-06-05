@@ -3,7 +3,7 @@ from langchain_core.pydantic_v1 import BaseModel, Field
 from typing import Literal, Optional
 from langchain_core.messages import AIMessage
 from app.core.llm_setup import llm
-from orquestador_state import OrchestratorState, agent_names, agent_node_names, agent_descriptions_map
+from .orquestador_state import OrchestratorState, agent_names, agent_node_names, agent_descriptions_map
 from langgraph.graph import END
 
 
@@ -20,7 +20,7 @@ class SupervisorDecision(BaseModel):
     question_for_user: Optional[str] = Field(
         None, description="Si la acción es 'ask_user_for_clarification', esta es la pregunta para el usuario."
     )
-    
+
 prompt_template_supervisor_iterative = ChatPromptTemplate.from_messages([
     ("system",
      "Eres un supervisor experto de una plataforma agrícola multiagente. Tu objetivo es orquestar a un equipo de agentes especializados para responder completamente a la consulta del usuario. "
