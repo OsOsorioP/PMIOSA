@@ -1,5 +1,5 @@
 from langgraph.graph import END
-from orquestador_state import OrchestratorState, agent_node_names, agent_apps
+from .orquestador_state import OrchestratorState, agent_node_names, agent_apps
 from langchain_core.messages import AIMessage
 
 def agent_invoker_node_revised(state: OrchestratorState, agent_app, agent_name_log: str):
