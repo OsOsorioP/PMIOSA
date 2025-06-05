@@ -1,5 +1,5 @@
 from langchain_core.messages import HumanMessage, AIMessage, ToolMessage, BaseMessage
-from .models import ChatMessageInput # Importa desde el mismo directorio api
+from app.models.models import ChatMessageInput # Importa desde el mismo directorio api
 
 def convert_to_langchain_message(msg_input: ChatMessageInput) -> BaseMessage:
     # (COPIA AQUÍ TU FUNCIÓN convert_to_langchain_message COMPLETA)
