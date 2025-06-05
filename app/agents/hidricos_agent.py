@@ -1,7 +1,8 @@
 from langgraph.prebuilt import ToolNode
 from app.core.llm_setup import llm 
-from agent_state import AgentState
-from tools.hidricos_tools import hidricos_tools
+from .agent_state import AgentState
+from app.tools.hidricos_tools import hidricos_tools
+from langgraph.graph import StateGraph, END
 
 agente_hidrico_descripcion = """
 Eres el Agente de Gestión de Recursos Hídricos.
@@ -29,3 +30,38 @@ def agente_hidrico_node(state: AgentState):
     response = llm_with_hidricos_tools.invoke(messages)
     print(f"Respuesta del LLM (Agente Recursos Hídricos): {response}")
     return {"messages": [response]}
+
+# PASO 5.4: CONSTRUCCIÓN DEL GRAFO PARA EL AGENTE DE GESTIÓN DE RECURSOS HÍDRICOS
+
+workflow_hidrico = StateGraph(AgentState)
+
+workflow_hidrico.add_node("agente_hidrico", agente_hidrico_node)
+workflow_hidrico.add_node("ejecutor_herramientas_hidrico", hidricos_tool_node)
+
+workflow_hidrico.set_entry_point("agente_hidrico")
+
+def deberia_llamar_herramientas_hidrico(state: AgentState) -> str:
+    """
+    Decide si el último mensaje del LLM (agente_hidrico) contiene una llamada a herramienta.
+    """
+    print("--- CONDICIÓN: ¿LLAMAR HERRAMIENTA (HÍDRICO)? ---")
+    last_message = state['messages'][-1]
+    if hasattr(last_message, 'tool_calls') and last_message.tool_calls:
+        print(f"Decisión: SÍ, llamar herramienta. Llamadas: {last_message.tool_calls}")
+        return "ejecutor_herramientas_hidrico"
+    print("Decisión: NO, finalizar/responder.")
+    return END
+
+workflow_hidrico.add_conditional_edges(
+    "agente_hidrico",
+    deberia_llamar_herramientas_hidrico,
+    {
+        "ejecutor_herramientas_hidrico": "ejecutor_herramientas_hidrico",
+        END: END
+    }
+)
+
+workflow_hidrico.add_edge("ejecutor_herramientas_hidrico", "agente_hidrico")
+
+app_hidrico = workflow_hidrico.compile()
+print("Grafo para el Agente de Gestión de Recursos Hídricos compilado.")
