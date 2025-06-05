@@ -1,11 +1,11 @@
 from fastapi import APIRouter, HTTPException
 from typing import List
 
-from agents.graph import app_orchestrator_iterative 
+from app.agents.graph import app_orchestrator_iterative 
 from langchain_core.messages import BaseMessage 
 
-from models.models import ChatRequest, ChatResponse, ChatMessageInput 
-from utils import convert_from_langchain_message
+from app.models.models import ChatRequest, ChatResponse, ChatMessageInput 
+from app.utils import convert_from_langchain_message
 
 router = APIRouter()
 
