@@ -1,7 +1,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from .core.config import settings
-from .api.chat import endpoints
+from app.core.config import settings
+from app.api.chat import router
 
 app_fastapi = FastAPI(
     title="Plataforma Multiagente de Agricultura Sostenible v2",
@@ -19,7 +19,7 @@ if settings.BACKEND_CORS_ORIGINS:
     )
 
 
-app_fastapi.include_router(endpoints.router, prefix="/api/v1") 
+app_fastapi.include_router(router, prefix="/api/v1") 
 
 # Endpoint de bienvenida en la raíz de la app (diferente al del router)
 @app_fastapi.get("/")
