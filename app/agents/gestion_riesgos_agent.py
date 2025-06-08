@@ -64,3 +64,13 @@ workflow_gestion_riesgos.add_edge("ejecutor_herramientas_riesgos", "agente_gesti
 
 app_gestion_riesgos = workflow_gestion_riesgos.compile()
 print("Grafo para el Agente de Predicción y Mitigación de Riesgos compilado.")
+
+import os
+try:
+  graph_image_bytes = app_gestion_riesgos.get_graph().draw_mermaid_png()
+  image_path = os.path.join(os.path.dirname("app/assets/graphs/"), "gestion_riesgos.png")
+  with open(image_path, "wb") as f:
+    f.write(graph_image_bytes)
+    print(f"INFO: Imagen del grafo de flujo de trabajo guardada en: {image_path}")
+except Exception as e:
+  print(f"ADVERTENCIA: No se pudo generar la imagen del grafo de flujo de trabajo: {e}")
