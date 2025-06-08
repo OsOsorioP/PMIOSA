@@ -4,7 +4,7 @@ from .config import settings
 settings.GOOGLE_API_KEY
 
 llm = ChatGoogleGenerativeAI(
-    model="gemini-1.5-flash-latest",
+    model="gemini-2.0-flash-exp",
     temperature=0.2,
 )
 
