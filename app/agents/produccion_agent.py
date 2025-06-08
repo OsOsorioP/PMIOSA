@@ -76,10 +76,12 @@ app_produccion = workflow_produccion.compile() # checkpointer=checkpointer si se
 
 print("Grafo para el Agente de Optimización de la Producción compilado.")
 
-# (Opcional) Visualizar el grafo
-# try:
-#     from IPython.display import Image, display
-#     display(Image(app_produccion.get_graph().draw_png()))
-#     print("Grafo de Producción visualizado.")
-# except Exception as e:
-#     print(f"No se pudo visualizar el grafo de Producción: {e}")
+import os
+try:
+  graph_image_bytes = app_produccion.get_graph().draw_mermaid_png()
+  image_path = os.path.join(os.path.dirname("app/assets/graphs/"), "produccion.png")
+  with open(image_path, "wb") as f:
+    f.write(graph_image_bytes)
+    print(f"INFO: Imagen del grafo de flujo de trabajo guardada en: {image_path}")
+except Exception as e:
+  print(f"ADVERTENCIA: No se pudo generar la imagen del grafo de flujo de trabajo: {e}")
