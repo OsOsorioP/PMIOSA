@@ -3,6 +3,7 @@ from app.core.llm_setup import llm
 from .agent_state import AgentState
 from app.tools.gestion_riesgos_tools import gestion_riesgos_tools
 from langgraph.graph import StateGraph, END
+from langchain_core.messages import SystemMessage,BaseMessage
 
 agente_riesgos_descripcion = """
 Eres el Agente de Predicción y Mitigación de Riesgos.
@@ -20,14 +21,16 @@ llm_with_gestion_riesgos_tools = llm.bind_tools(gestion_riesgos_tools)
 gestion_riesgos_tool_node = ToolNode(gestion_riesgos_tools)
 
 def agente_gestion_riesgos_node(state: AgentState):
-    """
-    Nodo del agente de predicción y mitigación de riesgos. Invoca al LLM
-    con las herramientas de gestión de riesgos y decide la siguiente acción.
-    """
     print("--- AGENTE GESTIÓN RIESGOS NODE ---")
-    messages = state['messages']
-    response = llm_with_gestion_riesgos_tools.invoke(messages)
-    print(f"Respuesta del LLM (Agente Gestión Riesgos): {response}")
+    
+    messages_for_llm: list[BaseMessage] = []
+
+    messages_for_llm.append(SystemMessage(content=agente_riesgos_descripcion))
+    messages_for_llm.extend(state['messages'])
+
+    response = llm_with_gestion_riesgos_tools.invoke(messages_for_llm)
+    print(f"Respuesta del LLM (Agente Gestión Riesgos): {response.content if hasattr(response, 'content') else response}")
+    
     return {"messages": [response]}
 
 # PASO 9.4: CONSTRUCCIÓN DEL GRAFO PARA EL AGENTE DE GESTIÓN DE RIESGOS
